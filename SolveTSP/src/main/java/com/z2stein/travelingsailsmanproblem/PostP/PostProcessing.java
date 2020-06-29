@@ -1,6 +1,7 @@
 package com.z2stein.travelingsailsmanproblem.PostP;
 
 import java.awt.Canvas;
+import java.awt.Point;
 
 /**
  * Provides all Methodes for the PostProcessing stuff
@@ -10,15 +11,20 @@ import java.awt.Canvas;
 public class PostProcessing extends Canvas {
 
 	private static final long serialVersionUID = -4517845051693542161L;
-	static int[] windowSize = {600,750};
-	static int[][] pixelData;
+	private static int[] windowSize = {600,750};
+	private static Point[] points;
 	
 	public static void main(String[] args) {
 		
 
 		double[][] data = getdata();
-		pixelData = ConvertToPixelCoordinates(data,windowSize);
-		Screen.setPixelData(pixelData);
+		
+		points = ConvertToPointsWithPixelCoordinates(data,windowSize);
+		
+		LineMy[] lines  = getLines(points);
+		
+		Screen.setPoints(points);
+		Screen.setLines(lines);
 		
 		new Screen(windowSize, "Blas");
 		
@@ -26,42 +32,56 @@ public class PostProcessing extends Canvas {
     }
 
 
+
 /**
- * COnvertes GeoCoordinates to PixelCoordinates
+ * COnvertes GeoCoordinates to Point Array
  * @param data the Array with the GeoCoordinates
  * @param windowSize2 the Size of the Used Window in Pixel {x,y}
- * @return the Array with PixelCoordinates for every Location
+ * @return the Array with a Point for every Location
  */
-	private static int[][] ConvertToPixelCoordinates(double[][] data, int[] windowSize2) {
-		
-		/**
-		 * Specifies a empty area at the Window Border
-		 */
-		int Pixelborder=50 ;
-		
-		int[][] resultArray = new int[data.length][data[0].length];
+private static Point[] ConvertToPointsWithPixelCoordinates(double[][] data, int[] windowSize2) {
+	/**
+	 * Specifies a empty area at the Window Border
+	 */
+	int Pixelborder=50 ;
+	
+	Point[] resultPoint = new Point[data.length];
 
-		double[][] dataStatistics = getMinMaxSpan(data); //{{xMin,xMax,xMax-xMin},{yMin,yMax,yMax-yMin}}
-		
-		
-		// convert GeoCoordinates to double between 0 and 1.0
-		for (int i = 0; i < data.length; i++) {
-			for (int j = 0; j < data[0].length; j++) {
-				data[i][j] = (data[i][j]-dataStatistics[j][0])/dataStatistics[j][2];
-			}
+	double[][] dataStatistics = getMinMaxSpan(data); //{{xMin,xMax,xMax-xMin},{yMin,yMax,yMax-yMin}}
+	
+	
+	// convert GeoCoordinates to double between 0 and 1.0
+	for (int i = 0; i < data.length; i++) {
+		for (int j = 0; j < data[0].length; j++) {
+			data[i][j] = (data[i][j]-dataStatistics[j][0])/dataStatistics[j][2];
 		}
-		
-		// convert CoordinateDoubleFactor to PixelInteger
-		for (int i = 0; i < data.length; i++) {
-			for (int j = 0; j < data[0].length; j++) {
-				resultArray[i][j] = (int) (Pixelborder + data[i][j]*(windowSize2[j]-2*Pixelborder) );
-			}
-		}
-		
-		return resultArray;
+	}
+	
+	// convert CoordinateDoubleFactor to Points
+	int tempCoordX;
+	int tempCoordY;
+	
+	for (int i = 0; i < data.length; i++) {
+		tempCoordX = (int) (Pixelborder + data[i][0]*(windowSize2[0]-2*Pixelborder) );
+		tempCoordY = (int) (Pixelborder + data[i][1]*(windowSize2[1]-2*Pixelborder) );
+		resultPoint[i] = new Point(tempCoordX,tempCoordY);
+	}
+		return resultPoint;
 	}
 
 
+
+
+private static LineMy[] getLines(Point[] points) {
+		int numberOfLines=10;
+	
+		LineMy[] lines = new LineMy[numberOfLines];
+		for (int i = 0; i < lines.length; i++) {
+			lines[i] = new LineMy(points[i], points[i+1]);
+		}
+	
+		return lines;
+	}
 
 
 /**

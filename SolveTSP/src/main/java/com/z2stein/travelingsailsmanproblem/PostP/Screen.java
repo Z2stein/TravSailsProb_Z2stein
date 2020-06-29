@@ -1,23 +1,23 @@
 package com.z2stein.travelingsailsmanproblem.PostP;
 
 import java.awt.Graphics;
+import java.awt.Point;
 
 import javax.swing.JFrame;
 
 /**
  * Is an Object which make a Graphical Window possible
- * @author Chris
+ * @author Z2stein
  * 
  */
 public class Screen extends JFrame {
 	
 	private static final long serialVersionUID = 2950298496204562715L;
 
-	static int[][] pointPixelData;
+	private static Point[] points;
+	private static LineMy[] lines;
 	
-	public static void setPixelData(int[][] pixelData) {
-		Screen.pointPixelData = pixelData;
-	}
+
 	
 	/**
 	 * Creates a Window
@@ -36,19 +36,32 @@ public class Screen extends JFrame {
 		
 	}
 
+	public static void setLines(LineMy[] lines) {
+		Screen.lines = lines;
+	}
 /**
  * paint the Points and Lines
  */
   public void paint(Graphics g) {
 	int x,y;
-	int size = 20;
+	int size = 10;
 	
-	for (int i = 0; i < pointPixelData.length; i++) {
-		x = pointPixelData[i][0];
-		y = pointPixelData[i][1];
+	for (int i = 0; i < points.length; i++) {
+		x = points[i].x;
+		y = points[i].y;
 		        g.fillOval(x, y, size, size);
 	}
+	
+	for (int i = 0; i < lines.length; i++) {
+		g.drawLine(lines[i].getpA().x, lines[i].getpA().y, lines[i].getpB().x, lines[i].getpB().y);
+	}
+	
 
   }
+
+public static void setPoints(Point[] points) {
+	Screen.points = points;
+}
+
 
 }

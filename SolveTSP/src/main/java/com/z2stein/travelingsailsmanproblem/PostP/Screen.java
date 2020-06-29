@@ -2,37 +2,50 @@ package com.z2stein.travelingsailsmanproblem.PostP;
 
 import java.awt.Graphics;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+/**
+ * Is an Object which make a Graphical Window possible
+ * @author Chris
+ * 
+ */
 public class Screen extends JFrame {
 	
-	static int[][] pixelData;
+	private static final long serialVersionUID = 2950298496204562715L;
+
+	static int[][] pointPixelData;
 	
 	public static void setPixelData(int[][] pixelData) {
-		Screen.pixelData = pixelData;
+		Screen.pointPixelData = pixelData;
 	}
 	
-	public Screen(int[] windowSize, String title) {
+	/**
+	 * Creates a Window
+	 * @param windowSize the Size of the Used Window in Pixel {x,y}
+	 * @param title of the Windows
+	 */
+	protected Screen(int[] windowSize, String title) {
 
 		setSize(windowSize[0], windowSize[1]);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-//		this.pack();
+		setTitle(title);
 		
-		setContentPane(new DrawArea());
 		setVisible(true);
 		
 		
 	}
-	
+
+/**
+ * paint the Points and Lines
+ */
   public void paint(Graphics g) {
 	int x,y;
 	int size = 20;
 	
-	for (int i = 0; i < pixelData.length; i++) {
-		x = pixelData[i][0];
-		y = pixelData[i][1];
+	for (int i = 0; i < pointPixelData.length; i++) {
+		x = pointPixelData[i][0];
+		y = pointPixelData[i][1];
 		        g.fillOval(x, y, size, size);
 	}
 

@@ -1,81 +1,74 @@
 package com.z2stein.travelingsailsmanproblem.PostP;
 
 import java.awt.Canvas;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
 
-import javax.sql.DataSource;
-import javax.swing.JFrame;
-
+/**
+ * Provides all Methodes for the PostProcessing stuff
+ * 
+ *
+ */
 public class PostProcessing extends Canvas {
+
+	private static final long serialVersionUID = -4517845051693542161L;
 	static int[] windowSize = {600,750};
 	static int[][] pixelData;
 	
 	public static void main(String[] args) {
 		
-	//erhalte Daten
+
 		double[][] data = getdata();
 		pixelData = ConvertToPixelCoordinates(data,windowSize);
 		Screen.setPixelData(pixelData);
 		
 		new Screen(windowSize, "Blas");
 		
-		
 
-//        JFrame frame = new JFrame("My Drawing");
-//        Canvas canvas = new PostProcessing();
-//        canvas.setSize(windowSize[0], windowSize[1]);
-//        frame.add(canvas);
-//        frame.pack();
-//        frame.setVisible(true);
     }
 
-//    public void paint(Graphics g) {
-//    	int x,y;
-//    	int size = 20;
-//    	
-//    	for (int i = 0; i < pixelData.length; i++) {
-//			x = pixelData[i][0];
-//			y = pixelData[i][1];
-//			        g.fillOval(x, y, size, size);
-//		}
-//
-//    }
 
-
-
+/**
+ * COnvertes GeoCoordinates to PixelCoordinates
+ * @param data the Array with the GeoCoordinates
+ * @param windowSize2 the Size of the Used Window in Pixel {x,y}
+ * @return the Array with PixelCoordinates for every Location
+ */
 	private static int[][] ConvertToPixelCoordinates(double[][] data, int[] windowSize2) {
 		
-		int Pixelborder=70 ;
-
-		double[][] tempFloat = new double[data.length][data[0].length];
-		int[][] res = new int[data.length][data[0].length];
-
+		/**
+		 * Specifies a empty area at the Window Border
+		 */
+		int Pixelborder=50 ;
 		
+		int[][] resultArray = new int[data.length][data[0].length];
+
 		double[][] dataStatistics = getMinMaxSpan(data); //{{xMin,xMax,xMax-xMin},{yMin,yMax,yMax-yMin}}
 		
+		
+		// convert GeoCoordinates to double between 0 and 1.0
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[0].length; j++) {
-				tempFloat[i][j] = (data[i][j]-dataStatistics[j][0])/dataStatistics[j][2];
+				data[i][j] = (data[i][j]-dataStatistics[j][0])/dataStatistics[j][2];
 			}
 		}
 		
+		// convert CoordinateDoubleFactor to PixelInteger
 		for (int i = 0; i < data.length; i++) {
 			for (int j = 0; j < data[0].length; j++) {
-				res[i][j] = (int) (Pixelborder + tempFloat[i][j]*(windowSize2[j]-2*Pixelborder) );
-				System.out.println(j+"  "+res[i][j]);
+				resultArray[i][j] = (int) (Pixelborder + data[i][j]*(windowSize2[j]-2*Pixelborder) );
 			}
-			
 		}
 		
-		return res;
+		return resultArray;
 	}
 
 
 
 
-
+/**
+ * Calculates the Minimum, the Maximum and the Span for X and Y Coordinates
+ * @param data the GeoCoordinates as 2D Array
+ * @return A 2D ResultArray with Min, Max, and Span for X and Y
+ */
 	private static double[][] getMinMaxSpan(double[][] data) {
 	
 		double xMax=0,yMax=0;
@@ -98,14 +91,16 @@ public class PostProcessing extends Canvas {
 			}
 		}
 
-		double[][] res = {{xMin,xMax,xMax-xMin},{yMin,yMax,yMax-yMin}};
-		return res;
+		double[][] resultArray = {{xMin,xMax,xMax-xMin},{yMin,yMax,yMax-yMin}};
+		return resultArray;
 	}
 
 
 
 
-
+/**
+ * @return the Locations of the msg-bases
+ */
 	private static double[][] getdata() {
 		
 		double[][] data =  	{{48.229035, 11.686153},
